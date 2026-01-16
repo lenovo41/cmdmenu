@@ -1,0 +1,456 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+
+name: Node.js Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+  
+    runs-on: ubuntu-latest
+  runs-on: windows-latest
+    runs-on: macos-latest
+    
+    
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: npm ci
+      - run: npm test
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+  -name: Install Dependencies 
+  run: npm install
+  publish-gpr:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/
+      - run: npm ci
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+jobs:
+  test:
+    name: Test on node ${{ matrix.node_version }} and ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node_version: ['8', '10', '12']
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node_version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node_version }}
+
+    - name: npm install, build and test
+      run: |
+        npm install
+        npm run build --if-present
+        npm test
+steps:
+- run: npm publish
+  if: github.event == 'push'
+    - uses: actions/cache@v2
+    with:
+      path: | 
+        path/to/dependencies
+        some/other/dependencies 
+      key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      # http://man7.org/linux/man-pages/man1/date.1.html
+  - name: Get Date
+    id: get-date
+    run: |
+      echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+    shell: bash
+
+  - uses: actions/cache@v2
+    with:
+      path: path/to/dependencies
+      key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/lockfiles') }}
+       - name: Codacy Analysis CLI
+  # You may pin to the exact commit or the version.
+  # uses: codacy/codacy-analysis-cli-action@204208f730d99d8b719a271b08e2c5770be8ee6e
+  uses: codacy/codacy-analysis-cli-action@2.0.0
+  with:
+    # Run with verbose output
+    verbose: # optional
+    # API token to retrieve your remote Codacy configuration for the project being analyzed
+    project-token: # optional
+    # Codacy's API URL, to retrieve your remote Codacy configuration
+    codacy-api-base-url: # optional
+    # Format of the output file
+    format: # optional
+    # Send analysis results to an output file
+    output: # optional
+    # The directory to be analyzed
+    directory: # optional
+    # Number of tools to run in parallel
+    parallel: # optional
+    # Maximum number of issues allowed for the analysis to succeed
+    max-allowed-issues: # optional
+    # The name of the tool to analyze the code
+    tool: # optional
+    # Maximum time each tool has to execute
+    tool-timeout: # optional
+    # Upload analysis results to Codacy
+    upload: # optional
+    # Fail the analysis if any tool fails to run
+    fail-if-incomplete: # optional
+    # Allow network access for tools
+    allow-network: # optional
+    # Force files to be readable by changing the permissions before running the analysis
+    force-file-permissions: # optional
+    # Reduce issue severity by one level, for non-security issues, for compatibility with GitHub's code scanning feature. This option will only have an effect when used in conjunction with '--format sarif'.
+    gh-code-scanning-compat: # optional
+    
+    -main:
+    on:
+  push:
+    branches:
+    - main
+    - release/*
+    - name: Code Inspector GitHub action
+  # You may pin to the exact commit or the version.
+  # uses: codeinspectorio/github-action@01c818be303e2c4bcec991ca1c51feab753a1e2a
+  uses: codeinspectorio/github-action@v1
+  with:
+    # Token to checkout the repository.
+    repo_token: 
+    # Access key on Code Inspector
+    code_inspector_access_key: 
+    # Secret key on Code Inspector
+    code_inspector_secret_key: 
+    # Minimum grade. Valid options are EXCELLENT, GOOD, NEUTRAL, WARNING, CRITICAL. Leave blank to ignore.
+    min_quality_grade: # default is 
+    # Minimum quality score from 0 (worst) to 100 (best)
+    min_quality_score: # default is 0
+    # Maximum defect rate per line of code (e.g. 0.01 for 1 defect per 100 lines of code). Leave 0 to ignore.
+    max_defects_rate: # default is 0
+    # Maximum number of complex functions rate (e.g. number of complex functions / number of functions). Leave 0 to ignore.
+    max_complex_functions_rate: # default is 0
+    # Maximum number of long functions rate (e.g. number of long functions / number of functions). Leave 0 to ignore.
+    max_long_functions_rate: # default is 0
+    # Project on code inspector. Will use the preferences of this analysis. Leave blank and no preferences are used
+    project_name: # default is 
+    # Timeout before giving up (in case analysis takes too long). Default is 10 minutes
+    max_timeout_sec: # default is 600
+    
+    - name: calibreapp/github-actions
+  # You may pin to the exact commit or the version.
+  # uses: calibreapp/github-actions@3d9e6b87da3b52cb96bb582253f7df0ad0ebd7fa
+  uses: calibreapp/github-actions@1.0.2
+  workflow "Trigger a Buildkite Build" {
+  on = "push"
+  resolves = ["Build"]
+}
+
+action "Build" {
+  uses = "buildkite/trigger-pipeline-action@v1.2.0"
+  secrets = ["BUILDKITE_API_ACCESS_TOKEN"]
+  env = {
+    PIPELINE = "my-org/my-deploy-pipeline"
+    COMMIT = "HEAD"
+    BRANCH = "master"
+    MESSAGE = ":github: Triggered from a GitHub Action"
+  }
+  <org-slug>/<pipeline-slug>
+}
+  - name: Execute Job
+  # You may pin to the exact commit or the version.
+  # uses: parasoft/execute-job-action@c0f2f77179eeba0b54b47a00c55769fa355df081
+  uses: parasoft/execute-job-action@1.0.1
+  with:
+    # CTP URL
+    ctpUrl: 
+    # CTP Username
+    ctpUsername: 
+    # CTP Password
+    ctpPassword: 
+    # CTP Test Execution Job Name
+    ctpJob: 
+    # Abort the job after timeout exceeded
+    abortOnTimeout: # optional
+    # Timeout value in minutes
+    timeoutInMinutes: # optional
+    # Publish test execution results to DTP
+    publishReport: # optional
+    # DTP URL
+    dtpUrl: # optional
+    # DTP Username
+    dtpUsername: # optional
+    # DTP Password
+    dtpPassword: # optional
+    # DTP Project Name
+    dtpProject: # optional
+    # Build ID to send to DTP
+    buildId: # optional
+    # Session Tag to send to DTP
+    sessionTag: # optional
+    # Append the test variable set environment name to the session tag
+    appendEnvironment: # optional
+    
+    
+  - name: Teamwork GitHub Sync
+  # You may pin to the exact commit or the version.
+  # uses: Teamwork/github-sync@f4d4ec15b53225ceec705ab9825003b3d7d56a76
+  uses: Teamwork/github-sync@v1.2.0
+  with:
+    # GitHub token
+    GITHUB_TOKEN: true
+    # Teamwork URI
+    TEAMWORK_URI: true
+    # Teamwork API token
+    TEAMWORK_API_TOKEN: true
+    # Do you want to enable automatic tagging: true/false
+    AUTOMATIC_TAGGING: true
+    
+    - name: Issue From Template
+  # You may pin to the exact commit or the version.
+  # uses: lowply/issue-from-template@61df10d2de7f5348489f624f2fcecea8ece2be57
+  uses: lowply/issue-from-template@v0.1.3
+  - name: GitHub Project Bot
+  # You may pin to the exact commit or the version.
+  # uses: subhamX/github-project-bot@8e2b254ef9a80d882a95fa6fb37bb0665aa1de72
+  uses: subhamX/github-project-bot@v1.0.0
+  with:
+    # REPO_URL: Repository URL
+    REPO_URL: 
+    # PROJECT_URL: Project URL
+    PROJECT_URL: 
+    # COLUMN_NAME: Column Name where new cards should be placed.
+    COLUMN_NAME: 
+    # ACCESS_TOKEN: Access Token to create new Project Card
+    ACCESS_TOKEN: 
+    
+    - name: Free Weekend
+  # You may pin to the exact commit or the version.
+  # uses: Namchee/good-weekend@e143f906f14b96ad652aeebbec0bbb09f6d86236
+  uses: Namchee/good-weekend@v1.1
+  with:
+    # GitHub action token
+    access_token: 
+    # Timezone location, according to tz database
+    timezone: # optional, default is UTC
+    # Label to be added on pull requests
+    label: # optional, default is good-weekend
+    # Reply contents
+    message: # optional, default is I'm sorry, but I don't accept any pull requests on weekends. I think you should enjoy your holiday too!
+Feel free to re-submit it on weekdays according to my timezone.
+
+Closed.
+- name: Reaction Comments
+  # You may pin to the exact commit or the version.
+  # uses: dessant/reaction-comments@3cfe9f6523ac5ee4402fff95709a924be23709af
+  uses: dessant/reaction-comments@v2.0.0
+  with:
+    # GitHub access token
+    github-token: 
+    # Do not process comments on issues with these labels, value must be a comma separated list of labels
+    exempt-issue-labels: # optional, default is 
+    # Replace matching comments on issues with this message, `{comment-author}` is an optional placeholder
+    issue-comment: # optional, default is :wave: @{comment-author}, would you like to leave a [reaction](https://git.io/JUJYX) instead?
+
+    # Do not process comments on pull requests with these labels, value must be a comma separated list of labels
+    exempt-pr-labels: # optional, default is 
+    # Replace matching comments on pull requests with this message, `{comment-author}` is an optional placeholder
+    pr-comment: # optional, default is :wave: @{comment-author}, would you like to leave a [reaction](https://git.io/JUJYX) instead?
+
+    # Process comments only on issues or pull requests, value must be either `issues` or `prs`
+    process-only: # optional, default is 
+    - name: Just Create A Pull Request
+  # You may pin to the exact commit or the version.
+  # uses: thomaseizinger/create-pull-request@708b87f1bf8075327bd126082bb2430020bab194
+  uses: thomaseizinger/create-pull-request@1.0.0
+  with:
+    # A GitHub API token
+    github-token: 
+    # The head ref that should be pulled into base.
+    head: 
+    # The title of the pull request.
+    title: 
+    # The base branch for the pull request. Defaults to master.
+    base: # optional
+    # Whether this should be a draft PR.
+    draft: # optional
+    # The body of the pull request.
+    body: # optional
+    # A comma-separated list of GitHub logins that should review this PR.
+    reviewers: # optional
+    
+    - name: clubhouse-pr-updater
+  # You may pin to the exact commit or the version.
+  # uses: blakeworsley/gh-actions-clubhouse-pr-updater@ed9ef376c7f0e0e974017ba6a085777928a7edb3
+  uses: blakeworsley/gh-actions-clubhouse-pr-updater@v0.0.5
+  with:
+    # Specific title to search for in the body of the existing pull request. This text will be replaced with the description of the clubhouse story.
+    descriptionHeader: # default is ### What does this pull request do?
+    # Specific url header to search for in the body of the existing pull request. This text will be replaced with the url and title of the clubhouse story.
+    urlHeader: # default is ### What is the relevant story?
+    # Delimeter before and after both the description and the url that the body will be split on.
+    delimiter: # default is ___
+    # Github token
+    GITHUB_TOKEN: # default is 
+    # Clubhouse token
+    CLUBHOUSE_TOKEN: # default is 
+    
+    - name: clubhouse-pr-updater
+  # You may pin to the exact commit or the version.
+  # uses: blakeworsley/gh-actions-clubhouse-pr-updater@ed9ef376c7f0e0e974017ba6a085777928a7edb3
+  uses: blakeworsley/gh-actions-clubhouse-pr-updater@v0.0.5
+  with:
+    # Specific title to search for in the body of the existing pull request. This text will be replaced with the description of the clubhouse story.
+    descriptionHeader: # default is ### What does this pull request do?
+    # Specific url header to search for in the body of the existing pull request. This text will be replaced with the url and title of the clubhouse story.
+    urlHeader: # default is ### What is the relevant story?
+    # Delimeter before and after both the description and the url that the body will be split on.
+    delimiter: # default is ___
+    # Github token
+    GITHUB_TOKEN: # default is 
+    # Clubhouse token
+    CLUBHOUSE_TOKEN: # default is 
+
+- name: Create Release
+  # You may pin to the exact commit or the version.
+  # uses: ncipollo/release-action@4b71ee3b25951e6098e7434cdc485edc5b3adab2
+  uses: ncipollo/release-action@v1.7.3
+  with:
+    # An optional flag which indicates if we should update a release if it already exists. Defaults to false.
+    allowUpdates: # optional, default is 
+    # An optional set of paths representing artifacts to upload to the release. This may be a single path or a comma delimited list of paths (or globs)
+    artifact: # optional, default is 
+    # An optional set of paths representing artifacts to upload to the release. This may be a single path or a comma delimited list of paths (or globs)
+    artifacts: # optional, default is 
+    # The content type of the artifact. Defaults to raw
+    artifactContentType:  
+    # An optional body for the release.
+    body: # optional, default is 
+    # An optional body file for the release. This should be the path to the file
+    bodyFile: # optional, default is 
+    # An optional commit reference. This will be used to create the tag if it does not exist.
+    commit: # optional, default is 
+    # Optionally marks this release as a draft release. Set to true to enable.
+    draft: # optional, default is 
+    # An optional name for the release. If this is omitted the tag will be used.
+    name: # optional, default is 
+    # Indicates if the release body should be omitted.
+    omitBody: # optional, default is false
+    # Indicates if the release body should be omitted during updates. The body will still be applied for newly created releases. This will preserve the existing body during updates.
+    omitBodyDuringUpdate: # optional, default is false
+    # Indicates if the release name should be omitted.
+    omitName: false
+    # Indicates if the release name should be omitted during updates. The name will still be applied for newly created releases. This will preserve the existing name during updates.
+    omitNameDuringUpdate: true
+    # Optionally marks this release as prerelease. Set to true to enable.
+    prerelease: true
+    # Indicates if existing release artifacts should be replaced. Defaults to true.
+    replacesArtifacts: true
+    # An optional tag for the release. If this is omitted the git ref will be used (if it is a tag).
+    tag: # optional, default is 
+    # The Github token.
+    token: true
+
+    - name: Verify Linked Issue
+  # You may pin to the exact commit or the version.
+  # uses: hattan/verify-linked-issue-action@95c0d0150d7e7687e45a76fbf0b0c6aa8daef288
+  uses: hattan/verify-linked-issue-action@v1.1.1
+  with:
+    # The text to use as the PR comen for when for pull requests with no linked issues.
+    message: # optional
+    # The name of the file to use as the comment template for pull requests with no linked issues.
+    filename: # optional
+    
+    - name: HashiCorp - Setup Terraform
+  # You may pin to the exact commit or the version.
+  # uses: hashicorp/setup-terraform@d22444889af304a44b997011fbabb81ff705a7b4
+  uses: hashicorp/setup-terraform@v1.2.1
+  with:
+    # The hostname of a Terraform Cloud/Enterprise instance to place within the credentials block of the Terraform CLI configuration file. Defaults to `app.terraform.io`.
+    cli_config_credentials_hostname: # optional, default is app.terraform.io
+    # The API token for a Terraform Cloud/Enterprise instance to place within the credentials block of the Terraform CLI configuration file.
+    cli_config_credentials_token: # optional
+    # The version of Terraform CLI to install. Instead of full version string you can also specify constraint string starting with "<" (for example `<1.13.0`) to install the latest version satisfying the constraint. A value of `latest` will install the latest version of Terraform CLI. Defaults to `latest`.
+    terraform_version: # optional, default is latest
+    # Whether or not to install a wrapper to wrap subsequent calls of the `terraform` binary and expose its STDOUT, STDERR, and exit code as outputs named `stdout`, `stderr`, and `exitcode` respectively. Defaults to `true`.
+    terraform_wrapper: # true
+    
+    /opt/hostedtoolcache/node/12.20.0/x64/bin/npm --version
+name: build-test
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'    
+  push:    
+    branches:
+      - main
+      - releases/*
+    paths-ignore:
+      - '**.md'
+      
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node 12
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - run: npm run build
+      - run: npm run format-check
+      - run: npm test
+      - name: Verify no unstaged changes
+        if: runner.os != 'windows'
+        run: __tests__/verify-no-unstaged-changes.sh
+         
+name: Licensed
+
+on:
+  push: {branches: main}
+  pull_request: {branches: main}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Check licenses
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - name: Install licensed
+        run: |
+          cd $RUNNER_TEMP
+          curl -Lfs -o licensed.tar.gz https://github.com/github/licensed/releases/download/2.12.2/licensed-2.12.2-linux-x64.tar.gz
+          sudo tar -xzf licensed.tar.gz
+          sudo mv licensed /usr/local/bin/licensed
+      - run: licensed status
+      
