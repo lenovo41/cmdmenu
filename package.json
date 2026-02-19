@@ -10,7 +10,7 @@
     "clipboardy": "2.x",
     "fuse.js": "3.x",
     "inquirer": "3.x",
-    "shelljs": "0.8.x",
+    "shelljs": "0.10.x",
     "yargs": "8.x"
   },
   "bin": {
